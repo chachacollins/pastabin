@@ -1,3 +1,5 @@
+import gleam/dynamic/decode
+import sqlight
 import gleam/bit_array
 import gleam/bytes_tree.{type BytesTree}
 import gleam/erlang/process
@@ -90,6 +92,7 @@ fn response(state: State, msg, conn) {
 }
 
 pub fn main() -> Nil {
+  use conn <- sqlight.with_connection("file:pastabindb")
   let assert Ok(_) =
     glisten.new(initial, response)
     |> glisten.bind(ip)

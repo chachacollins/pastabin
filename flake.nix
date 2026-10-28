@@ -10,7 +10,7 @@
   in
   {
     devShells.${system}.default = pkgs.mkShell {
-      packages = [pkgs.gleam];
+      packages = [pkgs.gleam pkgs.beam28Packages.rebar3 pkgs.sqlite];
     };
   };
 }
