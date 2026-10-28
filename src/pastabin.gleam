@@ -54,14 +54,18 @@ fn pastabin(state: State, msg: BitArray) -> Result(State, PastaBinError) {
   }
 }
 
-fn display_prompt(conn) {
-  let prompt = bit_array.from_string("> ")
+fn display_prompt(state: State, conn) {
+  let prompt = case state {
+    AwaitingCommand -> bit_array.from_string("> ")
+    Post(_) -> bit_array.from_string("post> ")
+    Get(_) -> bit_array.from_string("get> ")
+  }
   let assert Ok(_) = glisten.send(conn, bytes_tree.from_bit_array(prompt))
   Nil
 }
 
 fn initial(conn) {
-  display_prompt(conn)
+  display_prompt(AwaitingCommand, conn)
   #(AwaitingCommand, None)
 }
 
@@ -69,7 +73,7 @@ fn response(state: State, msg, conn) {
   let assert Packet(msg) = msg
   case pastabin(state, msg) {
     Ok(state) -> {
-      display_prompt(conn)
+      display_prompt(state, conn)
       glisten.continue(state)
     }
     Error(err) ->
@@ -78,7 +82,7 @@ fn response(state: State, msg, conn) {
           let assert Ok(cmd) = bit_array.to_string(msg)
           let err_msg = "ERROR: unknown command " <> cmd
           let assert Ok(_) = glisten.send(conn, bytes_tree.from_string(err_msg))
-          display_prompt(conn)
+          display_prompt(state, conn)
           glisten.continue(AwaitingCommand)
         }
       }
