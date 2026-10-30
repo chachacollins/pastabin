@@ -15,7 +15,7 @@
         if [[ ! -f "pastabindb" ]]; then
           sqlite3 pastabindb < setup.sql
         fi
-      ''
+      '';
     };
   };
 }
