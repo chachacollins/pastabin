@@ -11,6 +11,11 @@
   {
     devShells.${system}.default = pkgs.mkShell {
       packages = [pkgs.gleam pkgs.beam28Packages.rebar3 pkgs.sqlite];
+      shellHook = ''
+        if [[ ! -f "pastabindb" ]]; then
+          sqlite3 pastabindb < setup.sql
+        fi
+      ''
     };
   };
 }
